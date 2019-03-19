@@ -153,6 +153,3 @@ private:
 }; // end class TestCase
 
 }; // end namespace badkan
-
-
-
