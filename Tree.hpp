@@ -6,30 +6,36 @@
  */
 #include <iostream>
 
-struct node {
-	int value;
-	node* right;
-	node* left;
-	node* parent;
-};
+#pragma once
 
-class Tree {
-	public:
-		Tree();
-		int Size = 0;
+namespace ariel {
+
+	struct node {
+		int value;
+		node* right;
+		node* left;
+		node* parent;
+	};
+
+	class Tree {
+		int Size;
 		node *Root;
 
-		Tree& insert(int i);
-		Tree& remove(int i);
-		int size();
-		bool contains(int i);
-		int root();
-		int parent(int i);
-		int left(int i);
-		int right(int i);
-		void print();
+		public:
+			Tree();
+			~Tree();
+
+
+			Tree& insert(int i);
+			Tree& remove(int i);
+			int size();
+			bool contains(int i);
+			int root();
+			int parent(int i);
+			int left(int i);
+			int right(int i);
+			void print();
+	};
 };
-
-
 
 
