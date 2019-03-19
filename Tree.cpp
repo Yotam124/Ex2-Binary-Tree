@@ -14,10 +14,8 @@
 #include "Tree.hpp"
 
 using namespace std;
+using namespace ariel;
 
-Tree::Tree(){
-	this->Root = NULL;
-}
 
 //Help functions *********************************************
 
@@ -111,17 +109,17 @@ node* deleteNode(int key, node *root){
 		deleteNode(key, root->right);
 	}
 	else{
-		 if(root->left == NULL && root->right == NULL) {
+		 if(root->left == nullptr && root->right == nullptr) {
 		            delete root;
-		            root = NULL;
+		            root = nullptr;
 		 }
-		 else if(root->left == NULL){
+		 else if(root->left == nullptr){
 
 		            node* temp = root;
 		            root = root->right;
 		            delete temp;
 		 }
-		 else if(root->right == NULL) {
+		 else if(root->right == nullptr) {
 		            node* temp = root;
 		            root = root->left;
 		            delete temp;
@@ -137,30 +135,36 @@ node* deleteNode(int key, node *root){
 
 //End of help functions ********************************************
 
+Tree::Tree(){
+	Size = 0;
+	Root = nullptr;
+}
+
+Tree::~Tree(){
+	(*this).Root = deleteNode(Root->value, (*this).Root);
+}
 
 Tree& Tree::insert(int i){
-	Tree *tree = this;
-	if((*tree).Root != NULL){
-		insertHelper(i, (*tree).Root);
-		(*tree).Size++;
-		return *tree;
+	if((*this).Root != nullptr){
+		insertHelper(i, (*this).Root);
+		(*this).Size++;
+		return *this;
 	}
 	else{
-		(*tree).Root = new node;
-		(*tree).Root->value = i;
-		(*tree).Root->left = NULL;
-		(*tree).Root->right = NULL;
-		(*tree).Size++;
-		return *tree;
+		(*this).Root = new node;
+		(*this).Root->value = i;
+		(*this).Root->left = NULL;
+		(*this).Root->right = NULL;
+		(*this).Size++;
+		return *this;
 	}
 }
 
 Tree& Tree::remove(int key){
-	Tree *tree = this;
-	if (boolSearch(key, tree->Root) == true){
-		(*tree).Root = deleteNode(key, (*tree).Root);
-		tree->Size--;
-		return *tree;
+	if (boolSearch(key, (*this).Root) == true){
+		(*this).Root = deleteNode(key, (*this).Root);
+		this->Size--;
+		return *this;
 	}
 	else{
 		throw std::invalid_argument("This value isn't exists in this tree");
