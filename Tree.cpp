@@ -88,64 +88,78 @@ void inorder_print(node *leaf){
 	}
 }
 
-node* findMin(node* root){ //Side function for removeHelper
-    if(root == NULL) {
-        cout << "\nThe tree is empty.";
+node* deleteNode(node* root, int k){
+    // Base case
+    if (root == NULL)
+        return root;
+
+    // Recursive calls for ancestors of
+    // node to be deleted
+    if (root->value > k) {
+        root->left = deleteNode(root->left, k);
         return root;
     }
-    else {
-        node* temp = root;
-        while(temp->left != NULL)
-            temp = temp->left;
+    else if (root->value < k) {
+        root->right = deleteNode(root->right, k);
+        return root;
+    }
+
+    // We reach here when root is the node
+    // to be deleted.
+
+    // If one of the children is empty
+    if (root->left == NULL) {
+        node* temp = root->right;
+        delete root;
         return temp;
+    }
+    else if (root->right == NULL) {
+        node* temp = root->left;
+        delete root;
+        return temp;
+    }
+
+    // If both children exist
+    else {
+
+        node* succParent = root->right;
+
+        // Find successor
+        node *succ = root->right;
+        while (succ->left != NULL) {
+            succParent = succ;
+            succ = succ->left;
+        }
+
+        // Delete successor.  Since successor
+        // is always left child of its parent
+        // we can safely make successor's right
+        // right child as left of its parent.
+        succParent->left = succ->right;
+
+        // Copy Successor Data to root
+        root->value = succ->value;
+
+        // Delete Successor and return root
+        delete succ;
+        return root;
     }
 }
 
-node* deleteNode(int key, node *root){
-	if (key < root->value){
-		deleteNode(key, root->left);
-	}
-	else if (key > root->value){
-		deleteNode(key, root->right);
-	}
-	else{
-		 if(root->left == nullptr && root->right == nullptr) {
-		            delete root;
-		            root = nullptr;
-		 }
-		 else if(root->left == nullptr){
-
-		            node* temp = root;
-		            root = root->right;
-		            delete temp;
-		 }
-		 else if(root->right == nullptr) {
-		            node* temp = root;
-		            root = root->left;
-		            delete temp;
-		 }
-		 else {
-		            node* temp = findMin(root->right);
-		            root->value = temp->value;
-		            root->right = deleteNode(temp->value, root->right);
-		 }
-	}
-	return root;
-}
 
 //End of help functions ********************************************
 
 Tree::Tree(){
 	Size = 0;
-	Root = nullptr;
+	Root = NULL;
 }
 
-Tree::~Tree(){
-	(*this).Root = deleteNode(Root->value, (*this).Root);
-}
+/*Tree::~Tree(){
+	node* nothing = deleteNode((*this).Root, Root->value );
+}*/
 
 Tree& Tree::insert(int i){
-	if((*this).Root != nullptr){
+	if((*this).Root != NULL){
 		insertHelper(i, (*this).Root);
 		(*this).Size++;
 		return *this;
@@ -155,6 +169,7 @@ Tree& Tree::insert(int i){
 		(*this).Root->value = i;
 		(*this).Root->left = NULL;
 		(*this).Root->right = NULL;
+		(*this).Root->parent = NULL;
 		(*this).Size++;
 		return *this;
 	}
@@ -162,7 +177,7 @@ Tree& Tree::insert(int i){
 
 Tree& Tree::remove(int key){
 	if (boolSearch(key, (*this).Root) == true){
-		(*this).Root = deleteNode(key, (*this).Root);
+		node* nothing = deleteNode((*this).Root, key);
 		this->Size--;
 		return *this;
 	}
@@ -181,22 +196,45 @@ bool Tree::contains(int i){
 }
 
 int Tree::root(){
-	return this->Root->value;
+	if (Root != NULL){
+		return this->Root->value;
+	}
+	else {
+		throw std::invalid_argument("This value isn't exists in this tree");
+	}
 }
 
 int Tree::parent(int i){
 	node *sonNode = nodeSearch(i,Root);
-	return (*sonNode).parent->value;
+	if (sonNode->parent != NULL){
+		return (*sonNode).parent->value;
+	}
+	else{
+		throw std::invalid_argument("This value isn't exists in this tree");
+	}
 }
 
 int Tree::left(int i){
+	if (boolSearch(i,this->Root) == false){
+		throw std::invalid_argument("This value isn't exists in this tree");
+	}
 	node *parentNode = nodeSearch(i,Root);
+	if (parentNode->left != NULL){
 		return (*parentNode).left->value;
+	}
+	else{
+		throw std::invalid_argument("This value isn't exists in this tree");
+	}
 }
 
 int Tree::right(int i){
 	node *parentNode = nodeSearch(i,Root);
+	if (parentNode->right != NULL){
 		return (*parentNode).right->value;
+	}
+	else{
+		throw std::invalid_argument("This value isn't exists in this tree");
+	}
 }
 
 void Tree::print(){
