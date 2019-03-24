@@ -18,14 +18,12 @@ namespace ariel {
 	};
 
 	class Tree {
-		int Size;
-		node *Root;
-
 		public:
 			Tree();
 			~Tree();
 
-
+			int Size;
+			node *Root;
 			Tree& insert(int i);
 			Tree& remove(int i);
 			int size();
