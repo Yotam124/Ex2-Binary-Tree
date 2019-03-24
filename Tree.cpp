@@ -24,12 +24,13 @@ void insertHelper(int key, node *leaf){
 		if(leaf->left != NULL){
 			insertHelper(key, leaf->left);
 		}
-		else{
-			leaf->left = new node;
-			leaf->left->value = key;
-			leaf->left->left = NULL;
-			leaf->left->right = NULL;
-			leaf->left->parent = leaf;
+		else{ //leaf->left == NULL
+			node* newNode = new node;
+			newNode->value = key;
+			newNode->left = NULL;
+			newNode->right = NULL;
+			newNode->parent = leaf;
+			leaf->left = newNode;
 		}
 	}
 	else if(key > leaf->value){
@@ -37,11 +38,12 @@ void insertHelper(int key, node *leaf){
 			insertHelper(key, leaf->right);
 		}
 		else{
-			leaf->right = new node;
-			leaf->right->value = key;
-			leaf->right->right = NULL;
-			leaf->right->left = NULL;
-			leaf->right->parent = leaf;
+			node* newNode = new node;
+			newNode->value = key;
+			newNode->left = NULL;
+			newNode->right = NULL;
+			newNode->parent = leaf;
+			leaf->right = newNode;
 		}
 	}
 	else { //key == leaf->value
@@ -88,11 +90,13 @@ void inorder_print(node *leaf){
 	}
 }
 
-node* deleteNode(node* root, int k){
+node* deleteNode(node* root, int k)
+{
     // Base case
-    if (root == NULL)
-        return root;
-
+    if (root->right == NULL && root->left == NULL){
+        delete root;
+    	return NULL;
+    }
     // Recursive calls for ancestors of
     // node to be deleted
     if (root->value > k) {
@@ -110,11 +114,25 @@ node* deleteNode(node* root, int k){
     // If one of the children is empty
     if (root->left == NULL) {
         node* temp = root->right;
+        temp->parent = root->parent;
+        if (temp->value > temp->parent->value){
+                	temp->parent->right = temp;
+        }
+        else{
+        	temp->parent->left = temp;
+        }
         delete root;
         return temp;
     }
     else if (root->right == NULL) {
         node* temp = root->left;
+        temp->parent = root->parent;
+        if (temp->value > temp->parent->value){
+        	temp->parent->right = temp;
+        }
+        else{
+        	temp->parent->left = temp;
+        }
         delete root;
         return temp;
     }
@@ -122,28 +140,39 @@ node* deleteNode(node* root, int k){
     // If both children exist
     else {
 
-        node* succParent = root->right;
+        node* tempParent = root->right;
 
         // Find successor
-        node *succ = root->right;
-        while (succ->left != NULL) {
-            succParent = succ;
-            succ = succ->left;
+        node *temp = root->right;
+        while (temp->left != NULL) {
+            tempParent = temp;
+            temp = temp->left;
         }
 
         // Delete successor.  Since successor
         // is always left child of its parent
         // we can safely make successor's right
         // right child as left of its parent.
-        succParent->left = succ->right;
-
+        tempParent->left = temp->right;
+        if (temp->right != NULL){
+        	temp->right->parent = tempParent;
+        }
         // Copy Successor Data to root
-        root->value = succ->value;
+        root->value = temp->value;
 
         // Delete Successor and return root
-        delete succ;
+        delete temp;
         return root;
     }
+}
+
+void destroyTree(node* root){
+	if (root != NULL){
+		destroyTree(root->left);
+		destroyTree(root->right);
+		delete root;
+
+	}
 }
 
 
@@ -154,9 +183,10 @@ Tree::Tree(){
 	Root = NULL;
 }
 
-/*Tree::~Tree(){
-	node* nothing = deleteNode((*this).Root, Root->value );
-}*/
+Tree::~Tree(){
+	destroyTree(Root);
+}
+
 
 Tree& Tree::insert(int i){
 	if((*this).Root != NULL){
