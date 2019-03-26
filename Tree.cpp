@@ -21,27 +21,27 @@ using namespace ariel;
 
 void insertHelper(int key, node *leaf){
 	if(key < leaf->value){
-		if(leaf->left != NULL){
+		if(leaf->left != nullptr){
 			insertHelper(key, leaf->left);
 		}
 		else{ //leaf->left == NULL
 			node* newNode = new node;
 			newNode->value = key;
-			newNode->left = NULL;
-			newNode->right = NULL;
+			newNode->left = nullptr;
+			newNode->right = nullptr;
 			newNode->parent = leaf;
 			leaf->left = newNode;
 		}
 	}
 	else if(key > leaf->value){
-		if(leaf->right != NULL){
+		if(leaf->right != nullptr){
 			insertHelper(key, leaf->right);
 		}
 		else{
 			node* newNode = new node;
 			newNode->value = key;
-			newNode->left = NULL;
-			newNode->right = NULL;
+			newNode->left = nullptr;
+			newNode->right = nullptr;
 			newNode->parent = leaf;
 			leaf->right = newNode;
 		}
@@ -52,7 +52,7 @@ void insertHelper(int key, node *leaf){
 }
 
 bool boolSearch(int key, node *leaf){
-	if(leaf != NULL){
+	if(leaf != nullptr){
 		if(key == leaf->value){
 			return true;
 		}
@@ -70,7 +70,7 @@ bool boolSearch(int key, node *leaf){
 
 node* nodeSearch(int key, node *leaf)
 {
-  if(leaf!=NULL)
+  if(leaf!=nullptr)
   {
     if(key==leaf->value)
       return leaf;
@@ -79,100 +79,91 @@ node* nodeSearch(int key, node *leaf)
     else
       return nodeSearch(key, leaf->right);
   }
-  else return NULL;
+  else return nullptr;
 }
 
 void inorder_print(node *leaf){
-	if(leaf != NULL){
+	if(leaf != nullptr){
 		inorder_print(leaf->left);
 		cout << leaf->value << ",";
 		inorder_print(leaf->right);
 	}
 }
 
-node* deleteNode(node* root, int k)
-{
-    // Base case
-    if (root->right == nullptr && root->left == nullptr){
-        delete root;
-        root = NULL;
-    	return NULL;
+node* FindMax(node* root){
+    if(root==nullptr){
+    	return nullptr;
     }
-    // Recursive calls for ancestors of
-    // node to be deleted
-    if (root->value > k) {
-        root->left = deleteNode(root->left, k);
-        return root;
+    while(root->right != nullptr) {
+        root = root->right;
     }
-    else if (root->value < k) {
-        root->right = deleteNode(root->right, k);
-        return root;
+    return root;
+}
+
+void DeleteNode(node* &root,int data){
+
+    if(root==nullptr){
+    	return;
     }
 
-    // We reach here when root is the node
-    // to be deleted.
+    else if(data < root->value){
 
-    // If one of the children is empty
-    if (root->left == nullptr) {
-        node* temp = root->right;
-        temp->parent = root->parent;
-        if (temp->value > temp->parent->value){
-                	temp->parent->right = temp;
-        }
-        else{
-        	temp->parent->left = temp;
-        }
-        delete root;
-        root = NULL;
-        return temp;
-    }
-    else if (root->right == nullptr) {
-        node* temp = root->left;
-        temp->parent = root->parent;
-        if (temp->value > temp->parent->value){
-        	temp->parent->right = temp;
-        }
-        else{
-        	temp->parent->left = temp;
-        }
-        delete root;
-        root = NULL;
-        return temp;
+        DeleteNode(root->left, data);
     }
 
-    // If both children exist
+    else if (data > root->value){
+
+        DeleteNode(root->right, data);
+    }
     else {
+        //No child
+        if(root->right == nullptr && root->left == nullptr) {
 
-        node* tempParent = root->right;
-
-        // Find successor
-        node *temp = root->right;
-        while (temp->left != nullptr) {
-            tempParent = temp;
-            temp = temp->left;
+        	delete root;
+        	root = nullptr;
         }
 
-        // Delete successor.  Since successor
-        // is always left child of its parent
-        // we can safely make successor's right
-        // right child as left of its parent.
-        tempParent->left = temp->right;
-        if (temp->right != nullptr){
-        	temp->right->parent = tempParent;
-        }
-        // Copy Successor Data to root
-        root->value = temp->value;
+        //One child
+        else if(root->right == nullptr){
 
-        // Delete Successor and return root
-        delete temp;
-        temp = NULL;
-        return root;
+            node* temp = root;
+            root= root->left;
+
+            delete temp;
+            temp = nullptr;
+
+        }
+
+        else if(root->left == nullptr) {
+
+            node* temp = root;
+
+            root= root->right;
+
+            delete temp;
+            temp = nullptr;
+        }
+
+        //two child
+
+        else{
+
+            node* temp = FindMax(root->left);
+
+            root->value = temp->value;
+
+            DeleteNode(root->left, temp->value);
+
+        }
+
     }
+
 }
 
 
+
 void destroyTree(node* root){
-	if (root != NULL){
+	if (root != nullptr){
 		destroyTree(root->left);
 		destroyTree(root->right);
 		delete root;
@@ -185,7 +176,7 @@ void destroyTree(node* root){
 
 Tree::Tree(){
 	Size = 0;
-	Root = NULL;
+	Root = nullptr;
 }
 
 Tree::~Tree(){
@@ -194,7 +185,7 @@ Tree::~Tree(){
 
 
 Tree& Tree::insert(int i){
-	if((*this).Root != NULL){
+	if((*this).Root != nullptr){
 		insertHelper(i, (*this).Root);
 		(*this).Size++;
 		return *this;
@@ -202,9 +193,9 @@ Tree& Tree::insert(int i){
 	else{
 		(*this).Root = new node;
 		(*this).Root->value = i;
-		(*this).Root->left = NULL;
-		(*this).Root->right = NULL;
-		(*this).Root->parent = NULL;
+		(*this).Root->left = nullptr;
+		(*this).Root->right = nullptr;
+		(*this).Root->parent = nullptr;
 		(*this).Size++;
 		return *this;
 	}
@@ -212,7 +203,7 @@ Tree& Tree::insert(int i){
 
 Tree& Tree::remove(int key){
 	if (boolSearch(key, (*this).Root) == true){
-		node* nothing = deleteNode((*this).Root, key);
+		DeleteNode((*this).Root, key);
 		this->Size--;
 		return *this;
 	}
@@ -231,7 +222,7 @@ bool Tree::contains(int i){
 }
 
 int Tree::root(){
-	if (Root != NULL){
+	if (Root != nullptr){
 		return this->Root->value;
 	}
 	else {
@@ -241,7 +232,7 @@ int Tree::root(){
 
 int Tree::parent(int i){
 	node *sonNode = nodeSearch(i,Root);
-	if (sonNode->parent != NULL){
+	if (sonNode->parent != nullptr){
 		return (*sonNode).parent->value;
 	}
 	else{
@@ -254,7 +245,7 @@ int Tree::left(int i){
 		throw std::invalid_argument("This value isn't exists in this tree");
 	}
 	node *parentNode = nodeSearch(i,Root);
-	if (parentNode->left != NULL){
+	if (parentNode->left != nullptr){
 		return (*parentNode).left->value;
 	}
 	else{
@@ -264,7 +255,7 @@ int Tree::left(int i){
 
 int Tree::right(int i){
 	node *parentNode = nodeSearch(i,Root);
-	if (parentNode->right != NULL){
+	if (parentNode->right != nullptr){
 		return (*parentNode).right->value;
 	}
 	else{
