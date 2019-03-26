@@ -30,6 +30,8 @@ int main() {
   mytree.insert(55);
   mytree.insert(52);
 
+  ariel::Tree mytree2;
+
 
   badkan::TestCase tc("Binary tree");
   tc
@@ -75,9 +77,18 @@ int main() {
   .CHECK_THROWS (mytree.remove(75))
   .CHECK_THROWS (mytree.insert(10))
   .CHECK_OK (mytree.print())
+
+  .CHECK_THROWS (mytree2.remove(10))
+  .CHECK_OK    (mytree2.insert(10))
+  .CHECK_OK (mytree2.remove(10))
+  .CHECK_OK    (mytree2.insert(10))
+  .CHECK_OK    (mytree2.insert(5))
+  .CHECK_OK (mytree2.remove(10))
+  .CHECK_OK    (mytree2.insert(10))
+  .CHECK_OK (mytree2.remove(5))
+
+
   .print();
-
-
 
 
 
