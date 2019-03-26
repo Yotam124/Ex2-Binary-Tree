@@ -93,8 +93,9 @@ void inorder_print(node *leaf){
 node* deleteNode(node* root, int k)
 {
     // Base case
-    if (root->right == NULL && root->left == NULL){
+    if (root->right == nullptr && root->left == nullptr){
         delete root;
+        root = NULL;
     	return NULL;
     }
     // Recursive calls for ancestors of
@@ -112,7 +113,7 @@ node* deleteNode(node* root, int k)
     // to be deleted.
 
     // If one of the children is empty
-    if (root->left == NULL) {
+    if (root->left == nullptr) {
         node* temp = root->right;
         temp->parent = root->parent;
         if (temp->value > temp->parent->value){
@@ -122,9 +123,10 @@ node* deleteNode(node* root, int k)
         	temp->parent->left = temp;
         }
         delete root;
+        root = NULL;
         return temp;
     }
-    else if (root->right == NULL) {
+    else if (root->right == nullptr) {
         node* temp = root->left;
         temp->parent = root->parent;
         if (temp->value > temp->parent->value){
@@ -134,6 +136,7 @@ node* deleteNode(node* root, int k)
         	temp->parent->left = temp;
         }
         delete root;
+        root = NULL;
         return temp;
     }
 
@@ -144,7 +147,7 @@ node* deleteNode(node* root, int k)
 
         // Find successor
         node *temp = root->right;
-        while (temp->left != NULL) {
+        while (temp->left != nullptr) {
             tempParent = temp;
             temp = temp->left;
         }
@@ -154,7 +157,7 @@ node* deleteNode(node* root, int k)
         // we can safely make successor's right
         // right child as left of its parent.
         tempParent->left = temp->right;
-        if (temp->right != NULL){
+        if (temp->right != nullptr){
         	temp->right->parent = tempParent;
         }
         // Copy Successor Data to root
@@ -162,9 +165,11 @@ node* deleteNode(node* root, int k)
 
         // Delete Successor and return root
         delete temp;
+        temp = NULL;
         return root;
     }
 }
+
 
 void destroyTree(node* root){
 	if (root != NULL){
